@@ -26,6 +26,7 @@ In this file, search the line "integrated_main_ram_size" and swicth the value to
 You need to export these paths : 
 
 >export SOC_DIRECTORY="/home/username/litex/litex/litex/soc"
+
 >export BUILD_DIR="/home/username/litex/litex-boards/litex_boards/targets/build/terasic_de10lite"
 
 ## Upload firmware

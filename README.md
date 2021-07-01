@@ -21,6 +21,13 @@ In this file, search the line "integrated_main_ram_size" and swicth the value to
 
 (don't forget to do a ./soc_vaader.py to check all possibilities)
 
+## Export PATHs
+
+You need to export these paths : 
+
+>export SOC_DIRECTORY="/home/username/litex/litex/litex/soc"
+>export BUILD_DIR="/home/username/litex/litex-boards/litex_boards/targets/build/terasic_de10lite"
+
 ## Upload firmware
 Go to the firmware folder and use :
 
@@ -34,6 +41,9 @@ and
 
 > reboot
 
+Note : if you have an permition denied problem, use this command to give it and reboot : 
+
+> usermod -a -G dialout username
 
 ## Play with IOs
 

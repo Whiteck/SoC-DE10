@@ -8,7 +8,7 @@ Copy soc_vaader.py into litex-boards/litex_boards/targets/
 
 then make it executable :
 
-chmod a+x soc_vaader.py
+> chmod a+x soc_vaader.py
 
 Go to soc_cores, you find it in "litex/litex/soc/integration"
 In this file, search the line "integrated_main_ram_size" and swicth the value to 0x8000 (for 32KiB ram), 0x10000 (64KiB) or 0x20000 (128KiB)
@@ -16,9 +16,18 @@ In this file, search the line "integrated_main_ram_size" and swicth the value to
 ## Compute
 
 cd litex-boards/litex_boards/targets/
-./soc_vaader.py --build --load 
+> ./soc_vaader.py --build --load 
 
 (don't forget to do a ./soc_vaader.py to check all possibilities)
+
+## Upload firmware
+Go to the firmware folder and use :
+> make 
+then you should find new files and "firmware.bin", to upload it, use lxterm :
+> lxterm /dev/ttyUSB0 --kernel firmware.bin
+and 
+> reboot
+
 
 ## Play with IOs
 

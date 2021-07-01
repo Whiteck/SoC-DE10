@@ -25,9 +25,11 @@ In this file, search the line "integrated_main_ram_size" and swicth the value to
 Go to the firmware folder and use :
 
 > make 
+
 then you should find new files and "firmware.bin", to upload it, use lxterm :
 
 > lxterm /dev/ttyUSB0 --kernel firmware.bin
+
 and 
 
 > reboot

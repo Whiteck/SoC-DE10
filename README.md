@@ -11,7 +11,7 @@ then make it executable :
 > chmod a+x soc_vaader.py
 
 Go to soc_cores, you find it in "litex/litex/soc/integration"
-In this file, search the line "integrated_main_ram_size" and swicth the value to 0x8000 (for 32KiB ram), 0x10000 (64KiB) or 0x20000 (128KiB)
+In this file, search the line "integrated_main_ram_size" and switch the value to 0x8000 (for 32KiB ram), 0x10000 (64KiB) or 0x20000 (128KiB)
 
 ## Compute
 

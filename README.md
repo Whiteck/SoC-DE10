@@ -6,7 +6,9 @@ A repo to test and implement Lite X on a DE10 lite.
 
 The board : a DE 10 lite in this example
 
-An USB to UART (tx = IO8 | rx = IO9)
+A USB to UART (tx = IO8 | rx = IO9)
+
+(optional) An Oscilloscope to look the square signal from the firmware
 
 ## Installation 
 

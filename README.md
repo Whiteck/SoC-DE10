@@ -12,6 +12,8 @@ An USB to UART (tx = IO8 | rx = IO9)
 
 Copy soc_vaader.py into litex-boards/litex_boards/targets/
 
+Copy terasic_de10lite.py into litex-boards/litex_boards/platforms/
+
 then make it executable :
 
 > chmod a+x soc_vaader.py

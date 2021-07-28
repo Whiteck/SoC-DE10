@@ -68,4 +68,4 @@ Note : if you have an permition denied problem, use this command to give it and 
 ## Play with IOs
 
 After that, you will find the file "csr.h" in "build/terasic_de10lite/software/include/generated". It's an API to let you plays with IOs. 
-At the begining, you can add some line in the main.c, like "leds_out_write(0x3ff);" to make IOs works
+

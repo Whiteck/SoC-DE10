@@ -5,7 +5,9 @@ A repo to test and implement Lite X on a DE10 lite.
 ## What you need : 
 
 The board : a DE 10 lite in this example
+
 An USB to UART (tx = IO8 | rx = IO9)
+
 ## Installation 
 
 Copy soc_vaader.py into litex-boards/litex_boards/targets/

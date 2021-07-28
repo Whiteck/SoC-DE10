@@ -2,6 +2,10 @@
 
 A repo to test and implement Lite X on a DE10 lite. 
 
+## What you need : 
+
+The board : a DE 10 lite in this example
+An USB to UART (tx = IO8 | rx = IO9)
 ## Installation 
 
 Copy soc_vaader.py into litex-boards/litex_boards/targets/
@@ -10,8 +14,7 @@ then make it executable :
 
 > chmod a+x soc_vaader.py
 
-Go to soc_cores, you find it in "litex/litex/soc/integration"
-In this file, search the line "integrated_main_ram_size" and switch the value to 0x8000 (for 32KiB ram), 0x10000 (64KiB) or 0x20000 (128KiB)
+Then in soc_vaader.py, search the line "integrated_main_ram_size" and switch the value between : 0x2000 (for 8KiB ram) and 0x20000 (128KiB)
 
 ## Compute
 
@@ -19,7 +22,7 @@ In this file, search the line "integrated_main_ram_size" and switch the value to
 
 > ./soc_vaader.py --build --load 
 
-(don't forget to do a ./soc_vaader.py to check all possibilities)
+(don't forget to do a ./soc_vaader.py --help to check all possibilities)
 
 ## Export PATHs
 

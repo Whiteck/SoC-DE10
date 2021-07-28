@@ -24,7 +24,6 @@ int main() {
 
 
   while(1) {
-    //value_sw = arduino_in_read();
     value_sw = switches_in_read();
     leds_out_write(value_sw);
 
@@ -36,18 +35,26 @@ int main() {
    
     switch(value_btn) {
       case 0:
+      //both keys
+      //display "btn1_2"
       seven_seg_out_write(0x8387abf9ffA4);
         break;
 
       case 1:
+      //key 1 push
+      //display "btn1__"
       seven_seg_out_write(0x8387abf9ffff);
         break;
 
       case 2:
+      //key 0 push
+      //display "btn__2"
       seven_seg_out_write(0x8387abffffA4);
         break;
 
       default:
+      //no key push
+      //display VAADER
       seven_seg_out_write(0xC18888A18608);
         break;
     }

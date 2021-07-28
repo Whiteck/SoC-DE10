@@ -37,6 +37,16 @@ You need to export these paths :
 >export SOC_DIRECTORY="/home/username/litex/litex/litex/soc"
 
 >export BUILD_DIR="/home/username/litex/litex-boards/litex_boards/targets/build/terasic_de10lite"
+>
+## The firmware
+
+The firmware given will : 
+
+-> display "VAADER" or which buttons you are pushing
+
+-> Recopy switchs value to leds
+
+-> Create a square signal on the first pin to raspberry GPIOs
 
 ## Upload firmware
 Go to the firmware folder and use :

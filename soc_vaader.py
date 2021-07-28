@@ -24,14 +24,22 @@ from litex.soc.integration.soc_core import *
 from litex.soc.integration.builder import *
 from litex.soc.cores.video import VideoVGAPHY
 from litex.soc.cores.led import LedChaser
+from litex.soc.cores.timer import Timer 
+
 
 from litedram.modules import IS42S16320
 from litedram.phy import GENSDRPHY
 
 from litex.soc.cores import gpio
+from litex.soc.cores.spi import SPIMaster
+from litex.soc.cores.bitbang import I2CMaster
+from litex.soc.cores.pwm import PWM
+from litex.soc.cores.timer import Timer
+#import here new cores, if you want to add new hardware block
+
 
 # CRG ----------------------------------------------------------------------------------------------
-
+#This class create the clock use for the system
 class _CRG(Module):
     def __init__(self, platform, sys_clk_freq):
         self.rst = Signal()
@@ -55,26 +63,6 @@ class _CRG(Module):
         # SDRAM clock
         self.specials += DDROutput(1, 0, platform.request("sdram_clock"), ClockSignal("sys_ps"))
 
-# Class IO ------------------------------------------------------------------------------------------
-class Seven_seg(gpio.GPIOOut):
-    pass
-
-class Button(gpio.GPIOIn):
-    pass
-
-class Switch(gpio.GPIOIn):
-    pass
-
-class Led(gpio.GPIOOut):
-    pass
-
-class Gpio_in(gpio.GPIOIn):
-    pass
-
-class Gpio_out(gpio.GPIOOut):
-    pass
-
-
 # BaseSoC ------------------------------------------------------------------------------------------
 
 class BaseSoC(SoCCore):
@@ -82,6 +70,15 @@ class BaseSoC(SoCCore):
         platform = de10lite.Platform()
 
         # SoCCore ----------------------------------------------------------------------------------
+        #These kwargs overwrite the value find on soc / soc_core
+        #So you can here the value of the different memory size
+        kwargs["integrated_rom_size"] = 0x8000 # chose rom size (min = 0x6000)
+        kwargs["integrated_sram_size"] = 0x2000 # chose sram size (min = 0x6000)
+        kwargs["integrated_main_ram_size"] = 0 # chose Main ram size (min = depend of your personal firmware)
+
+
+
+
         SoCCore.__init__(self, platform, sys_clk_freq,
             ident          = "LiteX SoC on DE10-Lite",
             ident_version  = True,
@@ -91,6 +88,7 @@ class BaseSoC(SoCCore):
         self.submodules.crg = _CRG(platform, sys_clk_freq)
 
         # SDR SDRAM --------------------------------------------------------------------------------
+        #ADD the SDRAM if integrated_main_ram_size = 0
         if not self.integrated_main_ram_size:
             self.submodules.sdrphy = GENSDRPHY(platform.request("sdram"), sys_clk_freq)
             self.add_sdram("sdram",
@@ -100,42 +98,90 @@ class BaseSoC(SoCCore):
             )
 
         # Video Terminal ---------------------------------------------------------------------------
+        #Add the VGA connector if enter --with-video-terminal argument during compilation (other arguments are --build --load)
         if with_video_terminal:
             self.submodules.videophy = VideoVGAPHY(platform.request("vga"), clock_domain="vga")
             self.add_video_terminal(phy=self.videophy, timings="800x600@60Hz", clock_domain="vga")
 
-        # Leds -------------------------------------------------------------------------------------
-
-        self.submodules.leds = LedChaser(
-            pads         = platform.request_all("user_led"),
-            sys_clk_freq = sys_clk_freq)
+        # -------------------------------------------------------------------------------------
+        #Inputs IO :
 
         # Switches
-
         user_switches = Cat(*[platform.request("user_sw", i) for i in range(10)])
-        self.submodules.switches = Switch(user_switches)
+        self.submodules.switches = gpio.GPIOIn(user_switches)
         self.add_csr("switches")
+
+        # Buttons
+        keys = Cat(*[platform.request("user_btn", i) for i in range(2)])
+        self.submodules.keys = gpio.GPIOIn(keys)
+        self.add_csr("keys")
+
+        # -------------------------------------------------------------------------------------
+
+        #Output IO : 
+
+        # Leds
+        user_leds = Cat(*[platform.request("user_led", i) for i in range(10)])
+        self.submodules.leds = gpio.GPIOOut(user_leds)
+        self.add_csr("user_leds")
 
         # seven_seg
         seven_seg = Cat(*[platform.request("seven_seg", i) for i in range(6)])
-        self.submodules.seven_seg = Seven_seg(seven_seg)
+        self.submodules.seven_seg = gpio.GPIOOut(seven_seg)
         self.add_csr("seven segment")
 
-        # Buttons
-        buttons = Cat(*[platform.request("user_btn", i) for i in range(2)])
-        self.submodules.buttons = Button(buttons)
-        self.add_csr("buttons")
+        # -------------------------------------------------------------------------------------
 
+        #Input/Output
+
+        
         # GPIO type RASPBERRY
+        
+        #for making an input port : GPIOIn 
+        #for making an output port : GPIOOut
+          
+        self.submodules.port_RA = gpio.GPIOOut(platform.request("port_RA"))
+        self.add_csr("raspberry port A")
+        
+        self.submodules.port_RB = gpio.GPIOIn(platform.request("port_RB"))
+        self.add_csr("raspberry port B")
 
-        gpio_rasp = Cat(*[platform.request("gpio_0", i) for i in range(1)])
-        self.submodules.raspberry = Gpio_out(gpio_rasp)
-        self.add_csr("gpio_rasp")
+        self.submodules.port_RC = gpio.GPIOIn(platform.request("port_RC"))
+        self.add_csr("raspberry port C")
 
         # GPIO type ARDUINO
-        gpio_arduino = Cat(*[platform.request("gpio_1", i) for i in range(1)])
-        self.submodules.arduino = Gpio_in(gpio_arduino)
-        self.add_csr("gpio_arduino")
+              
+        self.submodules.port_A = gpio.GPIOIn(platform.request("port_A"))
+        self.add_csr("arduino port A")
+
+        self.submodules.port_B = gpio.GPIOOut(platform.request("port_B"))
+        self.add_csr("arduino port B")
+        
+        # -------------------------------------------------------------------------------------
+
+        #Communication buses
+
+        # SPI
+        def __init__(self, pads, data_width, sys_clk_freq, spi_clk_freq, with_csr=True, mode="raw"):
+            self.submodules.spi0 = SPIMaster(platform.request("spi0"), 8, 50e6, 8e6)
+            self.spi0.add_clk_divider()
+            self.add_csr("spi0")
+
+        # I2C
+        self.submodules.i2c = I2CMaster(platform.request("i2c"))
+        self.add_csr("i2c")
+
+        # -------------------------------------------------------------------------------------
+
+        #Oscillo 
+        #ch 1 : system clock
+        self.specials += DDROutput(1, 0, platform.request("oscillo_probe_1"), ClockSignal("sys"))
+        #ch 2 : system clock send in a IO
+        self.specials += DDROutput(1, 0, platform.request("oscillo_probe_2"), ClockSignal("sys_ps"))
+
+
+
+        
 
 
 

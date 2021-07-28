@@ -18,7 +18,7 @@ int main() {
   #endif
 
   uart_init(); //uart_init() -> allways after init interrupt !!!
-  printf("Initialization Done\n");
+  //printf("Initialization Done\n");
 
 
 
